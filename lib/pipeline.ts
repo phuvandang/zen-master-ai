@@ -168,14 +168,14 @@ export async function checkAndCompact(
     .maybeSingle()
 
   // Count uncompacted daily logs
-  const query = supabase
+  let query = supabase
     .from('daily_logs')
     .select('id, content, log_date', { count: 'exact' })
     .eq('user_id', userId)
     .order('log_date', { ascending: true })
 
   if (lastMeta?.covers_to) {
-    query.gt('log_date', lastMeta.covers_to)
+    query = query.gt('log_date', lastMeta.covers_to)
   }
 
   const { data: uncompactedLogs, count } = await query

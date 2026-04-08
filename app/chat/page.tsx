@@ -135,13 +135,6 @@ export default function ChatPage() {
         }
       }
 
-      // Reload messages to include farewell
-      const { data } = await supabase
-        .from('messages')
-        .select('*')
-        .eq('session_id', session.id)
-        .order('created_at', { ascending: true })
-      setMessages(data ?? [])
       setStreamingText('')
 
       // Start fresh session
