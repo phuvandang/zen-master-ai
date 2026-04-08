@@ -62,7 +62,7 @@ export async function POST(request: Request) {
         // Step 2: Reflection
         controller.enqueue(emit({ type: 'progress', step: 'reflection', label: 'Đang suy ngẫm về buổi học...' }))
         const { data: progress } = await supabase
-          .from('user_progress')
+          .from('user_progress_v1')
           .select('level, mastered_topics, current_topics, patterns, teaching_notes')
           .eq('user_id', user.id)
           .single()
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
           const updatedProgress = await computeProgressUpdate(reflection, progress)
           if (updatedProgress) {
             await supabase
-              .from('user_progress')
+              .from('user_progress_v1')
               .update({ ...updatedProgress, updated_at: new Date().toISOString() })
               .eq('user_id', user.id)
           }

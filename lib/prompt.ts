@@ -12,7 +12,7 @@ export async function buildSystemPrompt(userId: string): Promise<string> {
   ] = await Promise.all([
     supabase.from('soul_config').select('key, content'),
     supabase.from('profiles').select('name, address_style').eq('id', userId).single(),
-    supabase.from('user_progress').select('level, mastered_topics, current_topics, patterns, teaching_notes').eq('user_id', userId).single(),
+    supabase.from('user_progress_v1').select('level, mastered_topics, current_topics, patterns, teaching_notes').eq('user_id', userId).single(),
     supabase.from('user_memory').select('content').eq('user_id', userId).single(),
   ])
 
