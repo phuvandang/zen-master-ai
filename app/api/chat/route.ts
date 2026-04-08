@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { buildSystemPrompt, getRecentMessages } from '@/lib/prompt'
+import { buildSystemPrompt, getRecentMessages, getRecentReflections } from '@/lib/prompt'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
@@ -22,11 +22,22 @@ export async function POST(request: Request) {
     content: message,
   })
 
-  // Build system prompt + fetch conversation history (including the message just saved)
-  const [systemPrompt, history] = await Promise.all([
+  // Build system prompt, conversation history, and inject recent reflections
+  const [systemPrompt, history, recentReflections] = await Promise.all([
     buildSystemPrompt(user.id),
     getRecentMessages(sessionId),
+    getRecentReflections(user.id, 3),
   ])
+
+  // Prepend reflections as first assistant message (internal context for the Master)
+  const messages = [
+    ...(recentReflections.length > 0 ? [{
+      role: 'assistant' as const,
+      content: '[Suy ngẫm từ những buổi trước — ghi chú nội bộ để hiểu học trò tốt hơn]\n\n' +
+        recentReflections.join('\n\n---\n\n'),
+    }] : []),
+    ...history,
+  ]
 
   // Stream response
   const encoder = new TextEncoder()
@@ -39,7 +50,7 @@ export async function POST(request: Request) {
           model: 'claude-opus-4-6',
           max_tokens: 4096,
           system: systemPrompt,
-          messages: history,
+          messages,
         })
 
         for await (const chunk of claudeStream) {
