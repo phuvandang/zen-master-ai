@@ -71,3 +71,15 @@ export interface PipelineEvent {
   chunk?: string
   error?: string
 }
+
+export interface KnowledgeSource {
+  id: string
+  added_by: string | null
+  source_key: string
+  title: string
+  teacher: string
+  source_url: string
+  topics: string[]
+  content: string
+  created_at: string
+}
