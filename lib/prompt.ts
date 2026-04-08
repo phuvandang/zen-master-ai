@@ -68,3 +68,19 @@ export async function getRecentMessages(
 
   return (data ?? []) as AnthropicMessage[]
 }
+
+export async function getRecentReflections(
+  userId: string,
+  limit = 3
+): Promise<string[]> {
+  const supabase = await createClient()
+
+  const { data } = await supabase
+    .from('reflections')
+    .select('content')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  return (data ?? []).map(r => r.content)
+}
