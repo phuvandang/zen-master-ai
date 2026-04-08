@@ -35,3 +35,39 @@ export interface AnthropicMessage {
   role: Role
   content: string
 }
+
+export interface DailyLog {
+  id: string
+  user_id: string
+  session_id: string
+  content: string
+  log_date: string
+  created_at: string
+}
+
+export interface Reflection {
+  id: string
+  user_id: string
+  session_id: string
+  content: string
+  created_at: string
+}
+
+export interface MetaReflection {
+  id: string
+  user_id: string
+  content: string
+  covers_from: string
+  covers_to: string
+  created_at: string
+}
+
+export type PipelineStep = 'farewell' | 'daily_log' | 'reflection' | 'progress' | 'compaction' | 'done'
+
+export interface PipelineEvent {
+  type: 'progress' | 'farewell_chunk' | 'done' | 'error'
+  step?: PipelineStep
+  label?: string
+  chunk?: string
+  error?: string
+}
